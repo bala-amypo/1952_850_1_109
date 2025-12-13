@@ -7,6 +7,18 @@ import java.util.UUID;
 import org.hibernate.annotations.*;
 
 import jakarta.persistance.*;
-@entity
+@Entity
+@Table(name = "user_profile")
+public class UserProfile 
+{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "user_id",unique = true , nullable = false)
+    private String userid;
+
+
+}
 
 
