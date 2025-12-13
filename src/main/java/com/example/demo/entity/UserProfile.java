@@ -18,6 +18,8 @@ public class UserProfile
     @Column(name = "user_id",unique = true , nullable = false)
     private String userid;
 
+    @Column(name = )
+
 
 }
 
