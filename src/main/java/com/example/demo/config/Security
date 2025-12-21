@@ -1,21 +1,5 @@
 
 
-UserProfileService.java
-
-CreditCardService.java
-
-RewardRuleService.java
-
-PurchaseIntentService.java
-
-RecommendationEngineService.java
-
-AuthService.java
-
-UserProfileServiceImpl.java
-
-CreditCardServiceImpl.java
-
 RewardRuleServiceImpl.java
 
 PurchaseIntentServiceImpl.java
