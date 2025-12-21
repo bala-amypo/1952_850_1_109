@@ -2,20 +2,23 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_profiles")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String userId;
+    private String userId; // business identifier
 
     private String fullName;
 
@@ -25,11 +28,23 @@ public class UserProfile {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String role = "USER";
 
+    @Column(nullable = false)
     private Boolean active = true;
 
     private LocalDateTime createdAt;
+
+    // Bidirectional relationships
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<CreditCardRecord> creditCards = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<PurchaseIntentRecord> purchaseIntents = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<RecommendationRecord> recommendations = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
