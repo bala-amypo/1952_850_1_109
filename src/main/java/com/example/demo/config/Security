@@ -1,13 +1,5 @@
 
 
-RewardRuleServiceImpl.java
-
-PurchaseIntentServiceImpl.java
-
-RecommendationEngineServiceImpl.java
-
-AuthServiceImpl.java
-
 AuthController.java
 
 UserProfileController.java
