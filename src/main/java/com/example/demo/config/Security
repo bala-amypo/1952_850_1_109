@@ -1,15 +1,5 @@
 
 
-UserProfileRepository.java
-
-CreditCardRecordRepository.java
-
-RewardRuleRepository.java
-
-PurchaseIntentRecordRepository.java
-
-RecommendationRecordRepository.java
-
 UserProfileService.java
 
 CreditCardService.java
