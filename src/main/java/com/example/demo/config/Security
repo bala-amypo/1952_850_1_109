@@ -1,21 +1,5 @@
 
 
-UserProfile.java
-
-CreditCardRecord.java
-
-RewardRule.java
-
-PurchaseIntentRecord.java
-
-RecommendationRecord.java
-
-LoginRequest.java
-
-RegisterRequest.java
-
-JwtResponse.java
-
 UserProfileRepository.java
 
 CreditCardRecordRepository.java
