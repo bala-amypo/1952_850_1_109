@@ -9,7 +9,7 @@ import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.service.PurchaseIntentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
