@@ -19,7 +19,7 @@ public class RecommendationEngineController {
     
     private final RecommendationEngineService recommendationService;
 
-    public RecommendationController(RecommendationEngineService recommendationService) {
+    public RecommendationEngineController(RecommendationEngineService recommendationService) {
         this.recommendationService = recommendationService;
     }
 
