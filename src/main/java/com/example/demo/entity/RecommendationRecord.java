@@ -5,50 +5,53 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name = "purchase_intents")
+@Table(name = "recommendations")
 @NoArgsConstructor
 @AllArgsConstructor
-public class PurchaseIntentRecord {
+public class RecommendationRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfile user;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "purchase_intent_id", nullable = false)
+    private PurchaseIntentRecord purchaseIntent;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "recommended_card_id", nullable = false)
+    private CreditCardRecord recommendedCard;
+
     @Transient
     private Long userId;
+    
+    @Transient
+    private Long purchaseIntentId;
+    
+    @Transient
+    private Long recommendedCardId;
 
     @Column(nullable = false)
-    @NotNull(message = "Amount is required")
-    @DecimalMin(value = "0.01", message = "Amount must be > 0")
-    private Double amount;
+    @NotNull(message = "Expected reward value is required")
+    @DecimalMin(value = "0.0", message = "Expected reward value must be >= 0")
+    private Double expectedRewardValue;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Category is required")
-    private String category;
+    @Lob
+    private String calculationDetailsJson;
 
-    private String merchant;
-
-    private LocalDateTime intentDate;
-
-    @OneToMany(mappedBy = "purchaseIntent", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<RecommendationRecord> recommendations = new HashSet<>();
+    private LocalDateTime recommendedAt;
 
     @PrePersist
-    @PreUpdate
-    protected void validate() {
-        if (amount == null || amount <= 0)
-            throw new IllegalArgumentException("Purchase amount must be > 0");
-        if (intentDate == null)
-            intentDate = LocalDateTime.now();
+    protected void onCreate() {
+        if (expectedRewardValue == null || expectedRewardValue < 0)
+            throw new IllegalArgumentException("Expected reward value must be >= 0");
+        recommendedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -58,21 +61,27 @@ public class PurchaseIntentRecord {
     public UserProfile getUser() { return user; }
     public void setUser(UserProfile user) { this.user = user; }
     
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
+    public PurchaseIntentRecord getPurchaseIntent() { return purchaseIntent; }
+    public void setPurchaseIntent(PurchaseIntentRecord purchaseIntent) { this.purchaseIntent = purchaseIntent; }
     
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public CreditCardRecord getRecommendedCard() { return recommendedCard; }
+    public void setRecommendedCard(CreditCardRecord recommendedCard) { this.recommendedCard = recommendedCard; }
     
-    public String getMerchant() { return merchant; }
-    public void setMerchant(String merchant) { this.merchant = merchant; }
+    public Double getExpectedRewardValue() { return expectedRewardValue; }
+    public void setExpectedRewardValue(Double expectedRewardValue) { this.expectedRewardValue = expectedRewardValue; }
     
-    public LocalDateTime getIntentDate() { return intentDate; }
-    public void setIntentDate(LocalDateTime intentDate) { this.intentDate = intentDate; }
+    public String getCalculationDetailsJson() { return calculationDetailsJson; }
+    public void setCalculationDetailsJson(String calculationDetailsJson) { this.calculationDetailsJson = calculationDetailsJson; }
     
-    public Set<RecommendationRecord> getRecommendations() { return recommendations; }
-    public void setRecommendations(Set<RecommendationRecord> recommendations) { this.recommendations = recommendations; }
+    public LocalDateTime getRecommendedAt() { return recommendedAt; }
+    public void setRecommendedAt(LocalDateTime recommendedAt) { this.recommendedAt = recommendedAt; }
     
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+    
+    public Long getPurchaseIntentId() { return purchaseIntentId; }
+    public void setPurchaseIntentId(Long purchaseIntentId) { this.purchaseIntentId = purchaseIntentId; }
+    
+    public Long getRecommendedCardId() { return recommendedCardId; }
+    public void setRecommendedCardId(Long recommendedCardId) { this.recommendedCardId = recommendedCardId; }
 }
