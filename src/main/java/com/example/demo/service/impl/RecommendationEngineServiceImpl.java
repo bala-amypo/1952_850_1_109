@@ -1,35 +1,79 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.RecommendationRecord;
-import com.example.demo.repository.RecommendationRecordRepository;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.RecommendationEngineService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class RecommendationEngineServiceImpl implements RecommendationEngineService {
 
-    private final RecommendationRecordRepository recommendationRecordRepository;
+    private final PurchaseIntentRecordRepository intentRepo;
+    private final CreditCardRecordRepository cardRepo;
+    private final RewardRuleRepository ruleRepo;
+    private final RecommendationRecordRepository recRepo;
+    private final UserProfileRepository userRepo;
 
-    public RecommendationEngineServiceImpl(RecommendationRecordRepository recommendationRecordRepository) {
-        this.recommendationRecordRepository = recommendationRecordRepository;
+    @Override
+    public RecommendationRecord generateRecommendation(Long intentId) {
+        PurchaseIntentRecord intent = intentRepo.findById(intentId)
+                .orElseThrow(() -> new EntityNotFoundException("Intent not found"));
+        UserProfile user = intent.getUser();
+        List<CreditCardRecord> cards = cardRepo.findActiveCardsByUser(user);
+
+        double maxReward = 0.0;
+        CreditCardRecord bestCard = null;
+        StringBuilder calcDetails = new StringBuilder("{");
+
+        for (CreditCardRecord card : cards) {
+            List<RewardRule> rules = ruleRepo.findActiveRulesForCardCategory(card, intent.getCategory());
+            for (RewardRule rule : rules) {
+                double reward = intent.getAmount() * rule.getMultiplier();
+                calcDetails.append("\"").append(card.getCardName())
+                           .append("\":").append(reward).append(",");
+                if (reward > maxReward) {
+                    maxReward = reward;
+                    bestCard = card;
+                }
+            }
+        }
+
+        calcDetails.append("}");
+
+        if (bestCard == null)
+            throw new EntityNotFoundException("No valid card found for this intent");
+
+        RecommendationRecord recommendation = new RecommendationRecord();
+        recommendation.setUser(user);
+        recommendation.setPurchaseIntent(intent);
+        recommendation.setRecommendedCard(bestCard);
+        recommendation.setExpectedRewardValue(maxReward);
+        recommendation.setCalculationDetailsJson(calcDetails.toString());
+
+        return recRepo.save(recommendation);
     }
 
     @Override
-    public List<RecommendationRecord> generateRecommendations(Long userId) {
-        // Example logic: Recommend 3 dummy products
-        List<RecommendationRecord> recommendations = new ArrayList<>();
-        recommendations.add(new RecommendationRecord(userId, "Product A", LocalDateTime.now()));
-        recommendations.add(new RecommendationRecord(userId, "Product B", LocalDateTime.now()));
-        recommendations.add(new RecommendationRecord(userId, "Product C", LocalDateTime.now()));
+    public RecommendationRecord getRecommendationById(Long id) {
+        return recRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Recommendation not found"));
+    }
 
-        // Save to DB
-        recommendationRecordRepository.saveAll(recommendations);
+    @Override
+    public List<RecommendationRecord> getRecommendationsByUser(Long userId) {
+        UserProfile user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return recRepo.findByUser(user);
+    }
 
-        return recommendations;
+    @Override
+    public List<RecommendationRecord> getAllRecommendations() {
+        return recRepo.findAll();
     }
 }
-

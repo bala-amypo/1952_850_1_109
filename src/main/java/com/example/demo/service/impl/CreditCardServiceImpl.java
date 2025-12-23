@@ -1,60 +1,67 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.CreditCardRecord;
-import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.entity.UserProfile;
 import com.example.demo.repository.CreditCardRecordRepository;
+import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.service.CreditCardService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CreditCardServiceImpl implements CreditCardService {
 
-    private final CreditCardRecordRepository creditCardRepository;
-
-    public CreditCardServiceImpl(CreditCardRecordRepository creditCardRepository) {
-        this.creditCardRepository = creditCardRepository;
-    }
+    private final CreditCardRecordRepository cardRepo;
+    private final UserProfileRepository userRepo;
 
     @Override
     public CreditCardRecord addCard(CreditCardRecord card) {
-        if (card.getAnnualFee() < 0) {
-            throw new BadRequestException("Annual fee must be non-negative");
+        if (card.getAnnualFee() < 0)
+            throw new IllegalArgumentException("Annual fee must be >= 0");
+            
+        if (card.getUser() == null && card.getUserId() != null) {
+            UserProfile user = userRepo.findById(card.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            card.setUser(user);
         }
-        return creditCardRepository.save(card);
+        
+        if (card.getUser() == null)
+            throw new IllegalArgumentException("User is required");
+            
+        return cardRepo.save(card);
     }
 
     @Override
     public CreditCardRecord updateCard(Long id, CreditCardRecord updated) {
-        CreditCardRecord existing = creditCardRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Card not found with id: " + id));
-
+        CreditCardRecord existing = getCardById(id);
         existing.setCardName(updated.getCardName());
         existing.setIssuer(updated.getIssuer());
         existing.setCardType(updated.getCardType());
         existing.setAnnualFee(updated.getAnnualFee());
         existing.setStatus(updated.getStatus());
-
-        return creditCardRepository.save(existing);
+        return cardRepo.save(existing);
     }
 
     @Override
     public List<CreditCardRecord> getCardsByUser(Long userId) {
-        return creditCardRepository.findByUserId(userId);
+        UserProfile user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return cardRepo.findByUser(user);
     }
 
     @Override
     public CreditCardRecord getCardById(Long id) {
-        return creditCardRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Card not found with id: " + id));
+        return cardRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Card not found"));
     }
 
     @Override
     public List<CreditCardRecord> getAllCards() {
-        return creditCardRepository.findAll();
+        return cardRepo.findAll();
     }
 }
-
-
