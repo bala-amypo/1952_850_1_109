@@ -18,7 +18,6 @@ public class PurchaseIntentController {
         this.purchaseIntentService = purchaseIntentService;
     }
 
-    
     @PostMapping
     public PurchaseIntentRecord createPurchaseIntent(
             @RequestBody PurchaseIntentRecord record) {

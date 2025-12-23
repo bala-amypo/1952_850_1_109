@@ -17,6 +17,10 @@ public class UserProfile {
 
     private boolean active;
 
+    @Column(name = "password", nullable = true)
+private String password;
+
+
     // Constructors
     public UserProfile() {}
     public UserProfile(String name, String email, boolean active) {
