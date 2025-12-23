@@ -11,4 +11,5 @@ import java.util.List;
 public interface PurchaseIntentRecordRepository extends JpaRepository<PurchaseIntentRecord, Long> {
 
     List<PurchaseIntentRecord> findByUser(UserProfile user);
+    List<PurchaseIntentRecord> findByUserId(Long userId);
 }
