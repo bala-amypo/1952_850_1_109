@@ -19,6 +19,10 @@ public class UserProfile {
 
     @Column(name = "password", nullable = true)
     private String password;
+    private String role;
+
+
+
 
 
     // Constructors
