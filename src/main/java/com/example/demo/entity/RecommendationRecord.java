@@ -17,15 +17,15 @@ public class RecommendationRecord {
     private Long id;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private UserProfile user;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "purchase_intent_id", nullable = false)
+    @JoinColumn(name = "purchase_intent_id", nullable = true)
     private PurchaseIntentRecord purchaseIntent;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "recommended_card_id", nullable = false)
+    @JoinColumn(name = "recommended_card_id", nullable = true)
     private CreditCardRecord recommendedCard;
 
     @Transient

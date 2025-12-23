@@ -19,7 +19,7 @@ public class CreditCardRecord {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     private UserProfile user;
 
     @Transient

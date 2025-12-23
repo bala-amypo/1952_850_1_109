@@ -17,7 +17,7 @@ public class RewardRule {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "card_id", nullable = false)
+    @JoinColumn(name = "card_id", nullable = true)
     private CreditCardRecord card;
 
     @Transient
