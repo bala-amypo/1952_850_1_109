@@ -32,7 +32,7 @@ public class PurchaseIntentController {
         return purchaseIntentService.getIntentsByUser(userId);
     }
 
-    
+   
     @GetMapping
     public List<PurchaseIntentRecord> getAllPurchaseIntents() {
         return purchaseIntentService.getAllIntents();
