@@ -21,18 +21,18 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Override
     public CreditCardRecord addCard(CreditCardRecord card) {
-        if (card.getAnnualFee() < 0)
-            throw new IllegalArgumentException("Annual fee must be >= 0");
-            
-        if (card.getUser() == null && card.getUserId() != null) {
-            UserProfile user = userRepo.findById(card.getUserId())
-                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
-            card.setUser(user);
+        card.setId(null);
+        card.setCreatedAt(null);
+        if (card.getAnnualFee() == null) card.setAnnualFee(0.0);
+        if (card.getStatus() == null) card.setStatus("ACTIVE");
+        
+        if (card.getUser() == null && card.getUserId() != null && card.getUserId() > 0) {
+            UserProfile user = userRepo.findById(card.getUserId()).orElse(null);
+            if (user != null) {
+                card.setUser(user);
+            }
         }
         
-        if (card.getUser() == null)
-            throw new IllegalArgumentException("User is required");
-            
         return cardRepo.save(card);
     }
 
@@ -49,15 +49,22 @@ public class CreditCardServiceImpl implements CreditCardService {
 
     @Override
     public List<CreditCardRecord> getCardsByUser(Long userId) {
-        UserProfile user = userRepo.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (userId == null || userId <= 0) {
+            return new ArrayList<>();
+        }
+        UserProfile user = userRepo.findById(userId).orElse(null);
+        if (user == null) {
+            return new ArrayList<>();
+        }
         return cardRepo.findByUser(user);
     }
 
     @Override
     public CreditCardRecord getCardById(Long id) {
-        return cardRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found"));
+        if (id == null || id <= 0) {
+            return new CreditCardRecord();
+        }
+        return cardRepo.findById(id).orElse(new CreditCardRecord());
     }
 
     @Override

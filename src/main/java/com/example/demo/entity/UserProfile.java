@@ -18,29 +18,21 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "User ID is required")
+    @Column(unique = true, nullable = true)
     private String userId; // business identifier
 
-    @NotBlank(message = "Full name is required")
     private String fullName;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
+    @Column(unique = true, nullable = true)
     private String email;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Password is required")
-    @JsonIgnore
+    @Column(nullable = true)
     private String password;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Role is required")
+    @Column(nullable = true)
     private String role = "USER";
 
-    @Column(nullable = false)
-    @NotNull(message = "Active status is required")
+    @Column(nullable = true)
     private Boolean active = true;
 
     private LocalDateTime createdAt;

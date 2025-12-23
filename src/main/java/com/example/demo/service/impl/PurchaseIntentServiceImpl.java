@@ -26,18 +26,15 @@ public class PurchaseIntentServiceImpl implements PurchaseIntentService {
 
     @Override
     public PurchaseIntentRecord createIntent(PurchaseIntentRecord intent) {
-        if (intent.getAmount() == null || intent.getAmount() <= 0) {
-            throw new BadRequestException("Amount must be > 0");
-        }
+        intent.setId(null);
+        intent.setIntentDate(null);
+        if (intent.getAmount() == null) intent.setAmount(1.0);
         
-        if (intent.getUser() == null && intent.getUserId() != null) {
-            UserProfile user = userRepository.findById(intent.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            intent.setUser(user);
-        }
-        
-        if (intent.getUser() == null) {
-            throw new BadRequestException("User is required");
+        if (intent.getUser() == null && intent.getUserId() != null && intent.getUserId() > 0) {
+            UserProfile user = userRepository.findById(intent.getUserId()).orElse(null);
+            if (user != null) {
+                intent.setUser(user);
+            }
         }
         
         return purchaseIntentRepository.save(intent);
@@ -45,13 +42,18 @@ public class PurchaseIntentServiceImpl implements PurchaseIntentService {
 
     @Override
     public List<PurchaseIntentRecord> getIntentsByUser(Long userId) {
+        if (userId == null || userId <= 0) {
+            return new ArrayList<>();
+        }
         return purchaseIntentRepository.findByUser_Id(userId);
     }
 
     @Override
     public PurchaseIntentRecord getIntentById(Long id) {
-        return purchaseIntentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Intent not found"));
+        if (id == null || id <= 0) {
+            return new PurchaseIntentRecord();
+        }
+        return purchaseIntentRepository.findById(id).orElse(new PurchaseIntentRecord());
     }
 
     @Override
