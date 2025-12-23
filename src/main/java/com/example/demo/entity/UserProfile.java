@@ -18,15 +18,16 @@ public class UserProfile {
     private boolean active;
 
     @Column(name = "password", nullable = true)
-private String password;
+    private String password;
 
 
     // Constructors
     public UserProfile() {}
-    public UserProfile(String name, String email, boolean active) {
+    public UserProfile(String name, String email, boolean active , String password) {
         this.name = name;
         this.email = email;
         this.active = active;
+        this.password = password;
     }
 
     // Getters and setters
@@ -41,4 +42,7 @@ private String password;
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    public String getpassword() { return password; }
+    public void setpassword(String password) { this.password = password; }
 }
