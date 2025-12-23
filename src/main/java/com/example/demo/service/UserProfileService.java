@@ -4,16 +4,10 @@ import com.example.demo.entity.UserProfile;
 import java.util.List;
 
 public interface UserProfileService {
-
-    List<UserProfile> getAllUsers();
-
+    UserProfile createUser(UserProfile profile);
     UserProfile getUserById(Long id);
-
-    UserProfile getUserByEmail(String email); // search by email
-
-    UserProfile createUser(UserProfile user);
-
+    UserProfile findByUserId(String userId);
+    UserProfile findByEmail(String email);
+    List<UserProfile> getAllUsers();
     UserProfile updateUserStatus(Long id, boolean active);
-
-    void deleteUser(Long id);
 }
