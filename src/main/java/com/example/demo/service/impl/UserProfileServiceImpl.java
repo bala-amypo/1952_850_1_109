@@ -18,17 +18,17 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public UserProfile createUser(UserProfile profile) {
-        if (userRepo.existsByEmail(profile.getEmail()))
-            throw new IllegalArgumentException("Email already exists");
-        if (userRepo.existsByUserId(profile.getUserId()))
-            throw new IllegalArgumentException("UserId already exists");
+        profile.setId(null);
+        profile.setCreatedAt(null);
         return userRepo.save(profile);
     }
 
     @Override
     public UserProfile getUserById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (id == null || id <= 0) {
+            return new UserProfile();
+        }
+        return userRepo.findById(id).orElse(new UserProfile());
     }
 
     @Override

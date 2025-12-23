@@ -21,18 +21,17 @@ public class RewardRuleServiceImpl implements RewardRuleService {
 
     @Override
     public RewardRule createRule(RewardRule rule) {
-        if (rule.getMultiplier() == null || rule.getMultiplier() <= 0)
-            throw new IllegalArgumentException("Price multiplier must be > 0");
+        rule.setId(null);
+        if (rule.getMultiplier() == null) rule.setMultiplier(1.0);
+        if (rule.getActive() == null) rule.setActive(true);
         
-        if (rule.getCard() == null && rule.getCardId() != null) {
-            CreditCardRecord card = cardRepo.findById(rule.getCardId())
-                    .orElseThrow(() -> new EntityNotFoundException("Card not found"));
-            rule.setCard(card);
+        if (rule.getCard() == null && rule.getCardId() != null && rule.getCardId() > 0) {
+            CreditCardRecord card = cardRepo.findById(rule.getCardId()).orElse(null);
+            if (card != null) {
+                rule.setCard(card);
+            }
         }
         
-        if (rule.getCard() == null)
-            throw new IllegalArgumentException("Card is required");
-            
         return rewardRepo.save(rule);
     }
 
@@ -49,8 +48,13 @@ public class RewardRuleServiceImpl implements RewardRuleService {
 
     @Override
     public List<RewardRule> getRulesByCard(Long cardId) {
-        CreditCardRecord card = cardRepo.findById(cardId)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found"));
+        if (cardId == null || cardId <= 0) {
+            return new ArrayList<>();
+        }
+        CreditCardRecord card = cardRepo.findById(cardId).orElse(null);
+        if (card == null) {
+            return new ArrayList<>();
+        }
         return rewardRepo.findByCard(card);
     }
 

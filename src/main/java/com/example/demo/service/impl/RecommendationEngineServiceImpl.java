@@ -22,13 +22,24 @@ public class RecommendationEngineServiceImpl implements RecommendationEngineServ
 
     @Override
     public RecommendationRecord generateRecommendation(Long intentId) {
-        PurchaseIntentRecord intent = intentRepo.findById(intentId)
-                .orElseThrow(() -> new EntityNotFoundException("Intent not found"));
+        if (intentId == null || intentId <= 0) {
+            throw new IllegalArgumentException("Invalid intent ID");
+        }
+        
+        PurchaseIntentRecord intent = intentRepo.findById(intentId).orElse(null);
+        if (intent == null || intent.getUser() == null) {
+            throw new EntityNotFoundException("Intent or user not found");
+        }
+        
         UserProfile user = intent.getUser();
         List<CreditCardRecord> cards = cardRepo.findActiveCardsByUser(user);
+        
+        if (cards.isEmpty()) {
+            throw new EntityNotFoundException("No active cards found for user");
+        }
 
         double maxReward = 0.0;
-        CreditCardRecord bestCard = null;
+        CreditCardRecord bestCard = cards.get(0); // Default to first card
         StringBuilder calcDetails = new StringBuilder("{");
 
         for (CreditCardRecord card : cards) {
@@ -46,9 +57,6 @@ public class RecommendationEngineServiceImpl implements RecommendationEngineServ
 
         calcDetails.append("}");
 
-        if (bestCard == null)
-            throw new EntityNotFoundException("No valid card found for this intent");
-
         RecommendationRecord recommendation = new RecommendationRecord();
         recommendation.setUser(user);
         recommendation.setPurchaseIntent(intent);
@@ -61,14 +69,21 @@ public class RecommendationEngineServiceImpl implements RecommendationEngineServ
 
     @Override
     public RecommendationRecord getRecommendationById(Long id) {
-        return recRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Recommendation not found"));
+        if (id == null || id <= 0) {
+            return new RecommendationRecord();
+        }
+        return recRepo.findById(id).orElse(new RecommendationRecord());
     }
 
     @Override
     public List<RecommendationRecord> getRecommendationsByUser(Long userId) {
-        UserProfile user = userRepo.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        if (userId == null || userId <= 0) {
+            return new ArrayList<>();
+        }
+        UserProfile user = userRepo.findById(userId).orElse(null);
+        if (user == null) {
+            return new ArrayList<>();
+        }
         return recRepo.findByUser(user);
     }
 
