@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/recommendations")
 @Tag(name = "Recommendations", description = "Recommendation management endpoints")
-public class RecommendationController {
+public class RecommendationEngineController {
     
     private final RecommendationEngineService recommendationService;
 
