@@ -7,6 +7,9 @@ import com.example.demo.entity.UserProfile;
 import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserProfileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "User authentication operations")
 public class AuthController {
 
     private final UserProfileService userService;
@@ -33,7 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+    @Operation(summary = "Register new user", description = "Creates a new user account and returns JWT token")
+    public ResponseEntity<JwtResponse> register(@Valid @RequestBody RegisterRequest request) {
         UserProfile user = new UserProfile();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
@@ -50,7 +55,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+    @Operation(summary = "User login", description = "Authenticates user and returns JWT token")
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
         // Authenticate user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
