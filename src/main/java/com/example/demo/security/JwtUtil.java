@@ -16,14 +16,12 @@ public class JwtUtil {
     private final SecretKey key;
     private final long expirationMs;
 
-  
     public JwtUtil(@Value("${app.jwt.secret}") String secret,
                    @Value("${app.jwt.expiration-ms}") long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMs = expirationMs;
     }
 
-    // Constructor for tests
     public JwtUtil(byte[] secretBytes, long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secretBytes);
         this.expirationMs = expirationMs;
