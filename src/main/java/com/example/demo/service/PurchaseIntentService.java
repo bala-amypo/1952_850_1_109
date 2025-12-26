@@ -10,7 +10,3 @@ public interface PurchaseIntentService {
     List<PurchaseIntentRecord> getAllIntents();
     List<PurchaseIntentRecord> getIntentsByUser(Long userId);
 }
-
-// ========================================
-
-// PurchaseIntentServiceImpl.java (Implementation)
