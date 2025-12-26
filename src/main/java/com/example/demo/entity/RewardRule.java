@@ -23,6 +23,16 @@ public class RewardRule {
     public RewardRule() {
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.active == null) {
+            this.active = true;
+        }
+        if (this.multiplier == null) {
+            this.multiplier = 1.0;
+        }
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
