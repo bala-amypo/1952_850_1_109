@@ -99,6 +99,12 @@ public class RecommendationEngineServiceImpl implements RecommendationEngineServ
     }
 
     @Override
+    public RecommendationRecord getRecommendationById(Long id) {
+    return recommendationRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Recommendation not found"));
+    }
+
+    @Override
     public List<RecommendationRecord> getRecommendationsByUser(Long userId) {
         return recommendationRepository.findByUserId(userId);
     }
