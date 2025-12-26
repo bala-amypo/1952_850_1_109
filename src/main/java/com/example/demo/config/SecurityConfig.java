@@ -3,7 +3,7 @@ package com.example.demo.config;
 import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -23,11 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UserProfileRepository userRepository;
-    private final JwtAuthenticationFilter jwtAuthFilter;
 
-    public SecurityConfig(UserProfileRepository userRepository, JwtAuthenticationFilter jwtAuthFilter) {
+    public SecurityConfig(UserProfileRepository userRepository) {
         this.userRepository = userRepository;
-        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -60,7 +58,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, @Lazy JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
