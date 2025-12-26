@@ -24,6 +24,16 @@ public class PurchaseIntentRecord {
     public PurchaseIntentRecord() {
     }
 
+    @PrePersist
+    public void prePersist() {
+        if (this.intentDate == null) {
+            this.intentDate = LocalDateTime.now();
+        }
+        if (this.amount == null) {
+            this.amount = 0.0;
+        }
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

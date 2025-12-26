@@ -32,6 +32,9 @@ public class RecommendationRecord {
         if (this.recommendedAt == null) {
             this.recommendedAt = LocalDateTime.now();
         }
+        if (this.expectedRewardValue == null) {
+            this.expectedRewardValue = 0.0;
+        }
     }
 
     // Getters and Setters
