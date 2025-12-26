@@ -32,8 +32,16 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
         
         // Generate unique userId if not provided
-        if (user.getUserId() == null) {
-            user.setUserId("USER_" + UUID.randomUUID().toString().substring(0, 8));
+        if (user.getUserId() == null || user.getUserId().isEmpty()) {
+            String generatedUserId;
+            do {
+                generatedUserId = "USER_" + UUID.randomUUID().toString().substring(0, 8);
+            } while (userRepository.existsByUserId(generatedUserId));
+            user.setUserId(generatedUserId);
+        } else {
+            if (userRepository.existsByUserId(user.getUserId())) {
+                throw new BadRequestException("User ID already exists");
+            }
         }
         
         // Encode password
